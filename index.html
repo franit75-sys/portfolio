@@ -1156,6 +1156,111 @@
             font-size: 0.85rem;
         }
 
+        /* ===== MIND MAP MODAL ===== */
+        .mindmap-modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.35s ease, visibility 0.35s ease;
+            padding: 24px;
+        }
+        .mindmap-modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        .mindmap-modal {
+            background: #fff;
+            border-radius: 28px;
+            max-width: 90vw;
+            max-height: 90vh;
+            width: auto;
+            padding: 20px 20px 16px;
+            box-shadow: 0 50px 100px rgba(0, 0, 0, 0.35);
+            transform: scale(0.90) translateY(30px);
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s ease;
+            opacity: 0;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .mindmap-modal-overlay.open .mindmap-modal {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+        .mindmap-modal .close-mindmap {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            font-size: 1.8rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.85);
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            z-index: 10;
+            backdrop-filter: blur(6px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+        .mindmap-modal .close-mindmap:hover {
+            background: rgba(0, 0, 0, 0.06);
+            color: var(--primary);
+            transform: rotate(90deg);
+        }
+        .mindmap-modal .mindmap-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+            letter-spacing: -0.3px;
+            text-align: center;
+        }
+        .mindmap-modal .mindmap-image-wrapper {
+            border-radius: 16px;
+            overflow: hidden;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-height: 75vh;
+        }
+        .mindmap-modal .mindmap-image-wrapper img {
+            width: 100%;
+            height: auto;
+            max-height: 75vh;
+            object-fit: contain;
+            display: block;
+            border-radius: 12px;
+        }
+        .mindmap-modal .mindmap-fallback {
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+        .mindmap-modal .mindmap-fallback i {
+            font-size: 3.5rem;
+            color: var(--secondary);
+            opacity: 0.3;
+            margin-bottom: 12px;
+            display: block;
+        }
+
         /* ----- GALLERY ----- */
         .gallery-grid {
             display: grid;
@@ -1373,6 +1478,13 @@
                 max-width: 94%;
                 padding: 24px 18px;
             }
+            .mindmap-modal {
+                max-width: 92vw;
+                padding: 16px 14px 12px;
+            }
+            .mindmap-modal .mindmap-image-wrapper img {
+                max-height: 65vh;
+            }
         }
 
         @media (max-width: 768px) {
@@ -1509,6 +1621,26 @@
             .cert-modal .cert-image-wrapper img {
                 max-height: 300px;
             }
+
+            .mindmap-modal {
+                max-width: 96vw;
+                padding: 14px 10px 10px;
+                border-radius: 20px;
+            }
+            .mindmap-modal .mindmap-image-wrapper img {
+                max-height: 58vh;
+            }
+            .mindmap-modal .close-mindmap {
+                width: 38px;
+                height: 38px;
+                font-size: 1.4rem;
+                top: 8px;
+                right: 10px;
+            }
+            .mindmap-modal .mindmap-title {
+                font-size: 1rem;
+                margin-bottom: 4px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1579,6 +1711,23 @@
             }
             .cert-modal h3 {
                 font-size: 1.1rem;
+            }
+            .mindmap-modal {
+                padding: 10px 8px 8px;
+                border-radius: 16px;
+            }
+            .mindmap-modal .mindmap-image-wrapper img {
+                max-height: 50vh;
+            }
+            .mindmap-modal .close-mindmap {
+                width: 34px;
+                height: 34px;
+                font-size: 1.2rem;
+                top: 6px;
+                right: 8px;
+            }
+            .mindmap-modal .mindmap-title {
+                font-size: 0.9rem;
             }
         }
 
@@ -2237,6 +2386,10 @@
                     <li><a href="#home" class="active" data-sound="nav">Home</a></li>
                     <li><a href="#about" data-sound="nav">About Me</a></li>
                     <li><a href="#education" data-sound="nav">Education</a></li>
+                    <!-- ===== NEW: MIND MAP NAV ITEM ===== -->
+                    <li><a href="#" id="mindMapNav" data-sound="nav" style="display:flex;align-items:center;gap:5px;">
+                            <i class="fas fa-brain" style="color:var(--cyan-glow);font-size:0.8rem;"></i> Mind Map
+                        </a></li>
                     <li class="nav-more" id="navMore">
                         <button type="button" id="moreToggle" aria-expanded="false" aria-haspopup="true">
                             More <i class="fas fa-chevron-down"></i>
@@ -2457,6 +2610,8 @@
                     <a href="#about" data-sound="nav">About Me</a>
                     <a href="#education" data-sound="nav">Education</a>
                     <a href="#contact" data-sound="nav">Contact</a>
+                    <!-- ===== NEW: Mind Map in footer ===== -->
+                    <a href="#" id="mindMapFooter" data-sound="nav"><i class="fas fa-brain" style="margin-right:4px;"></i> Mind Map</a>
                 </div>
 
                 <div class="socials">
@@ -2473,6 +2628,24 @@
     </div>
     <!-- end content-wrapper -->
 
+    <!-- ===== MIND MAP MODAL ===== -->
+    <div class="mindmap-modal-overlay" id="mindMapModalOverlay">
+        <div class="mindmap-modal" id="mindMapModal">
+            <button class="close-mindmap" id="closeMindMap" aria-label="Close mind map"><i class="fas fa-times"></i></button>
+            <div class="mindmap-title"><i class="fas fa-brain" style="color:var(--cyan-glow);margin-right:8px;"></i>Mind Map</div>
+            <div class="mindmap-image-wrapper" id="mindMapImageWrapper">
+                <!-- ============================================================
+                📁 SET YOUR MIND MAP IMAGE PATH BELOW (file in main folder)
+                ============================================================ -->
+                <img id="mindMapImage" src="mindmap.png" alt="Mind Map" />
+                <!-- If the image fails to load, show a fallback -->
+            </div>
+            <div style="margin-top:8px;font-size:0.7rem;color:var(--text-muted);text-align:center;opacity:0.7;">
+                <i class="fas fa-info-circle"></i> Click outside or press ESC to close
+            </div>
+        </div>
+    </div>
+
     <!-- ===== CERTIFICATE MODAL ===== -->
     <div class="cert-modal-overlay" id="certModalOverlay">
         <div class="cert-modal" id="certModal">
@@ -2488,7 +2661,7 @@
                 <img id="modalCertImage" src="" alt="Certificate" />
             </div>
             <div style="margin-top:10px;text-align:center;font-size:0.78rem;color:var(--text-muted);">
-                <i class="fas fa-info-circle"></i>  <strong/</strong>
+                <i class="fas fa-info-circle"></i>  <strong/></strong>
         </div>
     </div>
 
@@ -2857,6 +3030,7 @@
                     hamburger?.classList.remove('active');
                     navLinks?.classList.remove('open');
                     closeCertModal();
+                    closeMindMapModal();
                 }
             });
 
@@ -2901,7 +3075,8 @@
 
             function setActiveLink(id) {
                 allNavLinks.forEach(link => {
-                    const active = link.getAttribute('href') === '#' + id;
+                    const href = link.getAttribute('href') || '';
+                    const active = href === '#' + id;
                     link.classList.toggle('active', active);
                     if (active) link.setAttribute('aria-current', 'page');
                     else link.removeAttribute('aria-current');
@@ -3001,7 +3176,7 @@
                     org: 'Dolphin Institute, Dehradun',
                     date: '4th – 9th May 2026',
                     badge: '✔ Verified',
-                    image: 'c2.jpeg'   // ← Replace with your actual file name
+                    image: 'c2.jpeg' // ← Replace with your actual file name
                 },
                 conference: {
                     title: 'BPT National Conference',
@@ -3028,17 +3203,15 @@
                 // If image fails to load, show a fallback
                 modalCertImage.onerror = function() {
                     this.style.display = 'none';
-                    // Show a fallback message inside the wrapper
                     const wrapper = this.parentElement;
                     const fallback = document.createElement('div');
                     fallback.className = 'cert-placeholder';
-                    fallback.innerHTML = '<i class="fas fa-file-image"></i><p>Certificate image not found. Please check the file path.</p>';
-                    // Remove any existing fallback
+                    fallback.innerHTML =
+                        '<i class="fas fa-file-image"></i><p>Certificate image not found. Please check the file path.</p>';
                     const oldFallback = wrapper.querySelector('.cert-placeholder');
                     if (oldFallback) oldFallback.remove();
                     wrapper.appendChild(fallback);
                 };
-                // Reset on successful load
                 modalCertImage.onload = function() {
                     this.style.display = 'block';
                     const wrapper = this.parentElement;
@@ -3053,7 +3226,6 @@
             function closeCertModal() {
                 modalOverlay.classList.remove('open');
                 document.body.style.overflow = '';
-                // Reset image and remove fallback
                 modalCertImage.style.display = 'block';
                 const wrapper = modalCertImage.parentElement;
                 const fallback = wrapper.querySelector('.cert-placeholder');
@@ -3062,7 +3234,6 @@
                 modalCertImage.onload = null;
             }
 
-            // Close modal handlers
             closeModalBtn.addEventListener('click', closeCertModal);
             modalOverlay.addEventListener('click', (e) => {
                 if (e.target === modalOverlay) closeCertModal();
@@ -3071,7 +3242,6 @@
                 if (e.key === 'Escape') closeCertModal();
             });
 
-            // Attach certificate view buttons
             document.querySelectorAll('.btn-link[data-cert]').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -3080,13 +3250,89 @@
                 });
             });
 
+            // ================================================================
+            // ===== MIND MAP MODAL =====
+            // ================================================================
+            const mindMapOverlay = document.getElementById('mindMapModalOverlay');
+            const mindMapImage = document.getElementById('mindMapImage');
+            const closeMindMapBtn = document.getElementById('closeMindMap');
+
+            // ──── 📁 SET YOUR MIND MAP IMAGE PATH BELOW ────
+            // Place your image in the main folder and update the src below.
+            // Default: "mindmap.png" — change to your actual file name.
+            const MIND_MAP_IMAGE_PATH = 'mindmap.png'; // <-- CHANGE THIS to your image filename
+
+            // Set the image source
+            mindMapImage.src = MIND_MAP_IMAGE_PATH;
+            mindMapImage.alt = 'Mind Map';
+
+            // Handle image load error — show a friendly fallback
+            mindMapImage.onerror = function() {
+                this.style.display = 'none';
+                const wrapper = document.getElementById('mindMapImageWrapper');
+                const fallback = document.createElement('div');
+                fallback.className = 'mindmap-fallback';
+                fallback.innerHTML = `
+                        <i class="fas fa-brain"></i>
+                        <p style="font-size:1rem;font-weight:600;color:var(--primary);">Mind Map</p>
+                        <p style="font-size:0.85rem;">Image not found. Please place your mind map image in the main folder.</p>
+                        <p style="font-size:0.75rem;margin-top:6px;opacity:0.6;">Expected: <code>${MIND_MAP_IMAGE_PATH}</code></p>
+                    `;
+                const old = wrapper.querySelector('.mindmap-fallback');
+                if (old) old.remove();
+                wrapper.appendChild(fallback);
+            };
+            // Reset on successful load
+            mindMapImage.onload = function() {
+                this.style.display = 'block';
+                const wrapper = document.getElementById('mindMapImageWrapper');
+                const fallback = wrapper.querySelector('.mindmap-fallback');
+                if (fallback) fallback.remove();
+            };
+
+            function openMindMapModal() {
+                initSoundOnInteraction();
+                SoundEngine.click();
+                mindMapOverlay.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeMindMapModal() {
+                mindMapOverlay.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+
+            // Open from nav link
+            document.getElementById('mindMapNav').addEventListener('click', (e) => {
+                e.preventDefault();
+                openMindMapModal();
+                // Close mobile menu if open
+                hamburger?.classList.remove('active');
+                navLinks?.classList.remove('open');
+            });
+
+            // Open from footer link
+            document.getElementById('mindMapFooter').addEventListener('click', (e) => {
+                e.preventDefault();
+                openMindMapModal();
+            });
+
+            // Close handlers
+            closeMindMapBtn.addEventListener('click', closeMindMapModal);
+            mindMapOverlay.addEventListener('click', (e) => {
+                if (e.target === mindMapOverlay) closeMindMapModal();
+            });
+
+            // Close on Escape (already handled globally above)
+
             // ---------- INIT ----------
             setTimeout(updateActiveLink, 400);
 
-            console.log('🚀 Shruti Maurya BPT Portfolio loaded with 3D, sounds & local certificate images!');
-            console.log('📁 Create a "certificates" folder and place your images there.');
+            console.log('🚀 Shruti Maurya BPT Portfolio loaded with 3D, sounds, local certificate images & Mind Map!');
+            console.log('📁 Create a "certificates" folder and place your certificate images there.');
             console.log('📄 Update the paths in the certData object (cpr.image and conference.image).');
             console.log('📄 Place your CV as "Shruti_Maurya_CV.pdf" in the root folder.');
+            console.log('🧠 Mind Map image: set MIND_MAP_IMAGE_PATH variable in the script (default: mindmap.png)');
 
         }); // end DOMContentLoaded
     </script>
