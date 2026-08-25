@@ -767,6 +767,120 @@
             margin-right: auto;
         }
 
+        /* ================================================================
+               IMAGE PROTECTION — ENCRYPTION / ANTI-SCREENSHOT
+               ================================================================ */
+        .photo-protection-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            max-width: 260px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 24px 60px rgba(26, 82, 118, 0.20);
+            border: 6px solid #ffffff;
+            outline: 3px solid var(--cyan-glow);
+            aspect-ratio: 1/1;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        .photo-protection-wrapper canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none;
+            /* canvas itself doesn't block events */;
+        }
+
+        /* ---- The "cipher" overlay: a subtle pattern that makes screenshots less clean ---- */
+        .protect-overlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 3;
+            background-image:
+                repeating-linear-gradient(45deg,
+                    transparent,
+                    transparent 6px,
+                    rgba(0, 212, 255, 0.018) 6px,
+                    rgba(0, 212, 255, 0.018) 12px),
+                repeating-linear-gradient(-45deg,
+                    transparent,
+                    transparent 6px,
+                    rgba(0, 212, 255, 0.015) 6px,
+                    rgba(0, 212, 255, 0.015) 12px);
+            background-blend-mode: overlay;
+            animation: shimmerOverlay 8s linear infinite;
+        }
+
+        @keyframes shimmerOverlay {
+            0% {
+                background-position: 0 0, 0 0;
+            }
+            100% {
+                background-position: 24px 24px, -24px 24px;
+            }
+        }
+
+        /* ---- Watermark (visible but subtle) ---- */
+        .watermark-text {
+            position: absolute;
+            bottom: 14%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 4;
+            color: rgba(255, 255, 255, 0.50);
+            font-size: 0.55rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35), 0 0 20px rgba(0, 0, 0, 0.15);
+            pointer-events: none;
+            user-select: none;
+            -webkit-user-select: none;
+            backdrop-filter: blur(2px);
+            padding: 3px 14px;
+            border-radius: 40px;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            white-space: nowrap;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        /* ---- The "cipher" overlay that blocks right-click / drag on the image area ---- */
+        .protect-event-blocker {
+            position: absolute;
+            inset: 0;
+            z-index: 5;
+            cursor: default;
+            /* no grab cursor */
+            touch-action: none;
+            /* prevent touch gestures */;
+        }
+
+        /* ---- On hover, show a subtle "protected" indicator ---- */
+        .photo-protection-wrapper:hover .watermark-text {
+            color: rgba(255, 255, 255, 0.80);
+            background: rgba(0, 0, 0, 0.40);
+            transition: 0.3s ease;
+        }
+
+        /* ---- Fallback if canvas fails ---- */
+        .photo-protection-wrapper .fallback-img {
+            display: none;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-protection-wrapper .fallback-img.show {
+            display: block;
+        }
+
         /* ----- ABOUT ----- */
         .about-grid {
             display: grid;
@@ -777,19 +891,7 @@
         .about-photo {
             text-align: center;
         }
-        .about-photo img {
-            width: 100%;
-            max-width: 260px;
-            border-radius: 50%;
-            box-shadow: 0 24px 60px rgba(26, 82, 118, 0.20);
-            border: 6px solid #ffffff;
-            outline: 3px solid var(--cyan-glow);
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-            touch-action: manipulation;
-        }
-        .about-photo img:active {
-            transform: scale(0.97);
-        }
+
         .about-photo h3 {
             margin-top: 16px;
             color: var(--primary);
@@ -1450,8 +1552,7 @@
                 grid-template-columns: 1fr;
                 text-align: center;
             }
-            .about-photo img {
-                max-width: 200px;
+            .about-photo .photo-protection-wrapper {
                 margin: 0 auto;
             }
             .about-content .section-title::after {
@@ -1484,6 +1585,11 @@
             }
             .mindmap-modal .mindmap-image-wrapper img {
                 max-height: 65vh;
+            }
+            .watermark-text {
+                font-size: 0.5rem;
+                bottom: 12%;
+                padding: 2px 12px;
             }
         }
 
@@ -1641,6 +1747,16 @@
                 font-size: 1rem;
                 margin-bottom: 4px;
             }
+
+            .photo-protection-wrapper {
+                max-width: 200px;
+                border-width: 4px;
+            }
+            .watermark-text {
+                font-size: 0.45rem;
+                bottom: 10%;
+                padding: 2px 10px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1676,7 +1792,7 @@
             .container {
                 padding: 0 14px;
             }
-            .about-photo img {
+            .about-photo .photo-protection-wrapper {
                 max-width: 150px;
             }
             .section-title {
@@ -1729,6 +1845,11 @@
             .mindmap-modal .mindmap-title {
                 font-size: 0.9rem;
             }
+            .watermark-text {
+                font-size: 0.4rem;
+                bottom: 8%;
+                padding: 2px 8px;
+            }
         }
 
         /* touch-friendly tap highlights */
@@ -1761,8 +1882,8 @@
         }
 
         /* =========================================================
-           FULL PORTFOLIO REDESIGN — RESPONSIVE / MOBILE FIRST
-           ========================================================= */
+               FULL PORTFOLIO REDESIGN — RESPONSIVE / MOBILE FIRST
+               ========================================================= */
         :root {
             --ink: #0b1f33;
             --muted: #60758a;
@@ -2144,9 +2265,6 @@
             border: 1px solid rgba(18, 97, 160, .1);
             box-shadow: var(--shadow-modern) !important;
         }
-        .about-photo img {
-            border-radius: 22px !important;
-        }
         .about-content p {
             font-size: 1rem;
             color: #4e6578;
@@ -2455,7 +2573,25 @@
             <div class="container">
                 <div class="about-grid">
                     <div class="about-photo reveal-left">
-                        <img src="shruti.png" alt="Shruti Maurya - Physiotherapy Student" />
+                        <!-- ============================================================
+                        PROTECTED IMAGE — CANVAS + OVERLAYS
+                        ============================================================ -->
+                        <div class="photo-protection-wrapper" id="photoProtectionWrapper">
+                            <!-- Canvas: the image is rendered here -->
+                            <canvas id="profileCanvas" width="600" height="600"></canvas>
+
+                            <!-- Cipher overlay: subtle pattern to foil clean screenshots -->
+                            <div class="protect-overlay"></div>
+
+                            <!-- Watermark -->
+                          
+
+                            <!-- Event blocker: captures right-click, drag, touch -->
+                            <div class="protect-event-blocker" id="protectBlocker"></div>
+
+                            <!-- Fallback if canvas fails (hidden by default) -->
+                            <img src="shruti.png" alt="Shruti Maurya" class="fallback-img" id="fallbackImg" />
+                        </div>
                         <h3>Shruti Maurya</h3>
                         <p>BPT 2<sup>nd</sup> Year · Dolphin Institute</p>
                     </div>
@@ -2634,11 +2770,7 @@
             <button class="close-mindmap" id="closeMindMap" aria-label="Close mind map"><i class="fas fa-times"></i></button>
             <div class="mindmap-title"><i class="fas fa-brain" style="color:var(--cyan-glow);margin-right:8px;"></i>Mind Map</div>
             <div class="mindmap-image-wrapper" id="mindMapImageWrapper">
-                <!-- ============================================================
-                📁 SET YOUR MIND MAP IMAGE PATH BELOW (file in main folder)
-                ============================================================ -->
                 <img id="mindMapImage" src="mindmap.png" alt="Mind Map" />
-                <!-- If the image fails to load, show a fallback -->
             </div>
             <div style="margin-top:8px;font-size:0.7rem;color:var(--text-muted);text-align:center;opacity:0.7;">
                 <i class="fas fa-info-circle"></i> Click outside or press ESC to close
@@ -2662,12 +2794,242 @@
             </div>
             <div style="margin-top:10px;text-align:center;font-size:0.78rem;color:var(--text-muted);">
                 <i class="fas fa-info-circle"></i>  <strong/></strong>
+            </div>
         </div>
     </div>
 
     <!-- ===== JAVASCRIPT ===== -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+
+            // ================================================================
+            // 1. IMAGE PROTECTION — CANVAS RENDER + ANTI-SCREENSHOT
+            // ================================================================
+            (function protectImage() {
+                const canvas = document.getElementById('profileCanvas');
+                const fallback = document.getElementById('fallbackImg');
+                const wrapper = document.getElementById('photoProtectionWrapper');
+                const blocker = document.getElementById('protectBlocker');
+
+                if (!canvas) return;
+
+                const ctx = canvas.getContext('2d');
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+
+                // --- Load the image and draw it on canvas ---
+                img.onload = function() {
+                    // Set canvas size to match image aspect ratio
+                    const size = Math.min(img.width, img.height);
+                    const ratio = Math.min(600 / img.width, 600 / img.height);
+                    const w = img.width * ratio;
+                    const h = img.height * ratio;
+
+                    // Center the image in the square canvas
+                    const offsetX = (600 - w) / 2;
+                    const offsetY = (600 - h) / 2;
+
+                    canvas.width = 600;
+                    canvas.height = 600;
+
+                    // Clear and draw
+                    ctx.clearRect(0, 0, 600, 600);
+
+                    // ---- Draw a subtle background pattern (makes screenshots less clean) ----
+                    const grad = ctx.createRadialGradient(300, 300, 20, 300, 300, 340);
+                    grad.addColorStop(0, 'rgba(24,199,232,0.04)');
+                    grad.addColorStop(0.7, 'rgba(255,255,255,0.00)');
+                    ctx.fillStyle = grad;
+                    ctx.fillRect(0, 0, 600, 600);
+
+                    // ---- Draw the image ----
+                    ctx.drawImage(img, offsetX, offsetY, w, h);
+
+                    // ---- Draw a very subtle "cipher" grid overlay directly on canvas ----
+                    // This makes the image slightly different in screenshots vs. live view
+                    ctx.save();
+                    ctx.globalAlpha = 0.035;
+                    for (let i = 0; i < 600; i += 8) {
+                        ctx.beginPath();
+                        ctx.moveTo(i, 0);
+                        ctx.lineTo(i, 600);
+                        ctx.strokeStyle = '#00d4ff';
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                        ctx.beginPath();
+                        ctx.moveTo(0, i);
+                        ctx.lineTo(600, i);
+                        ctx.stroke();
+                    }
+                    ctx.restore();
+
+                    // ---- Draw a tiny watermark in the corner (extra layer) ----
+                    ctx.save();
+                    ctx.font = '18px "Segoe UI", system-ui, sans-serif';
+                    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+                    ctx.textAlign = 'right';
+                    ctx.textBaseline = 'bottom';
+                    ctx.fillText();
+                    ctx.restore();
+
+                    // Hide fallback, show canvas
+                    fallback.classList.remove('show');
+                    canvas.style.display = 'block';
+                };
+
+                // --- Handle image load error ---
+                img.onerror = function() {
+                    console.warn('🔒 Image protection: shruti.png not found, showing fallback.');
+                    canvas.style.display = 'none';
+                    fallback.classList.add('show');
+                    // Still protect the fallback img
+                    fallback.setAttribute('draggable', 'false');
+                    fallback.style.userSelect = 'none';
+                    fallback.style.webkitUserSelect = 'none';
+                    fallback.style.touchAction = 'none';
+                };
+
+                // --- Load the image ---
+                img.src = 'shruti.png';
+
+                // --- If the image is already cached, it might fire onload immediately ---
+                if (img.complete && img.naturalWidth > 0) {
+                    img.onload();
+                }
+
+                // ================================================================
+                // 2. EVENT BLOCKERS — right-click, drag, touch, keyboard
+                // ================================================================
+
+                // --- Block right-click on the wrapper ---
+                wrapper.addEventListener('contextmenu', function(e) {
+                    e.preventDefault();
+                    return false;
+                });
+
+                // --- Block drag ---
+                wrapper.addEventListener('dragstart', function(e) {
+                    e.preventDefault();
+                    return false;
+                });
+
+                // --- Block touch events that could lead to save ---
+                wrapper.addEventListener('touchstart', function(e) {
+                    // Allow normal scrolling, but block long-press save
+                    if (e.touches.length === 1) {
+                        // Let it pass, but we'll block long-press via the blocker
+                    }
+                }, { passive: true });
+
+                // --- Block long-press (mobile save-as) ---
+                let longPressTimer = null;
+                wrapper.addEventListener('touchstart', function(e) {
+                    longPressTimer = setTimeout(() => {
+                        e.preventDefault();
+                        // Vibrate if supported (haptic feedback)
+                        if (navigator.vibrate) navigator.vibrate(10);
+                        // Show a subtle visual feedback
+                        wrapper.style.transition = 'outline 0.15s ease';
+                        wrapper.style.outline = '3px solid rgba(255,0,0,0.3)';
+                        setTimeout(() => {
+                            wrapper.style.outline = '3px solid var(--cyan-glow)';
+                        }, 300);
+                    }, 600);
+                }, { passive: true });
+
+                wrapper.addEventListener('touchend', function() {
+                    if (longPressTimer) {
+                        clearTimeout(longPressTimer);
+                        longPressTimer = null;
+                    }
+                });
+                wrapper.addEventListener('touchmove', function() {
+                    if (longPressTimer) {
+                        clearTimeout(longPressTimer);
+                        longPressTimer = null;
+                    }
+                }, { passive: true });
+
+                // --- Block Ctrl+S, Ctrl+P, Ctrl+Shift+I (dev tools) ---
+                document.addEventListener('keydown', function(e) {
+                    // Ctrl+S (save page)
+                    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                        e.preventDefault();
+                        return false;
+                    }
+                    // Ctrl+P (print)
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+                        e.preventDefault();
+                        return false;
+                    }
+                    // Ctrl+Shift+I (dev tools)
+                    if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'I' || e.key === 'i')) {
+                        e.preventDefault();
+                        return false;
+                    }
+                    // F12 (dev tools)
+                    if (e.key === 'F12') {
+                        e.preventDefault();
+                        return false;
+                    }
+                    // Ctrl+U (view source)
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'u') {
+                        e.preventDefault();
+                        return false;
+                    }
+                });
+
+                // --- Block Print Screen (limited effectiveness, but helps) ---
+                document.addEventListener('keyup', function(e) {
+                    if (e.key === 'PrintScreen') {
+                        // Show a brief warning
+                        const warn = document.createElement('div');
+                        warn.style.cssText = `
+                                position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+                                background: rgba(0,0,0,0.85); color: #fff; padding: 14px 28px;
+                                border-radius: 12px; font-size: 0.95rem; z-index: 99999;
+                                backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1);
+                                box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+                                text-align: center; max-width: 90vw;
+                                animation: fadeInDown 0.3s ease;
+                            `;
+                        warn.innerHTML =
+                            '<i class="fas fa-shield-alt" style="color:var(--cyan-glow);margin-right:10px;"></i> This image is protected — screenshots are discouraged.';
+                        document.body.appendChild(warn);
+                        setTimeout(() => {
+                            warn.style.opacity = '0';
+                            warn.style.transition = 'opacity 0.5s ease';
+                            setTimeout(() => warn.remove(), 600);
+                        }, 2500);
+
+                        // Also briefly flash the protected overlay
+                        const overlay = wrapper.querySelector('.protect-overlay');
+                        if (overlay) {
+                            overlay.style.backgroundImage = `
+                                    repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(255,0,0,0.06) 4px, rgba(255,0,0,0.06) 8px),
+                                    repeating-linear-gradient(-45deg, transparent, transparent 4px, rgba(255,0,0,0.04) 4px, rgba(255,0,0,0.04) 8px)
+                                `;
+                            setTimeout(() => {
+                                overlay.style.backgroundImage = '';
+                            }, 800);
+                        }
+                    }
+                });
+
+                // --- Block copy on the wrapper ---
+                wrapper.addEventListener('copy', function(e) {
+                    e.preventDefault();
+                    return false;
+                });
+
+                // --- Block cut ---
+                wrapper.addEventListener('cut', function(e) {
+                    e.preventDefault();
+                    return false;
+                });
+
+                console.log('🔒 Image protection active — canvas rendering + event blockers.');
+            })();
 
             // ---------- SOUND ENGINE (Web Audio) ----------
             const SoundEngine = {
@@ -3168,22 +3530,20 @@
             const closeModalBtn = document.getElementById('closeModal');
 
             // ──── 📁 SET YOUR LOCAL CERTIFICATE IMAGE PATHS BELOW ────
-            // Create a folder named "certificates" in the same directory as this HTML file,
-            // place your images there, and update the paths accordingly.
             const certData = {
                 cpr: {
                     title: 'CPR Workshop Certificate',
                     org: 'Dolphin Institute, Dehradun',
                     date: '4th – 9th May 2026',
                     badge: '✔ Verified',
-                    image: 'c2.jpeg' // ← Replace with your actual file name
+                    image: 'c2.jpeg'
                 },
                 conference: {
                     title: 'BPT National Conference',
                     org: 'Neuro Revive',
                     date: '15th March 2026',
                     badge: '✔ Attended',
-                    image: 'c1.jpeg' // ← Replace with your actual file name
+                    image: 'c1.jpeg'
                 }
             };
 
@@ -3200,7 +3560,6 @@
                 modalCertImage.src = data.image;
                 modalCertImage.alt = data.title;
 
-                // If image fails to load, show a fallback
                 modalCertImage.onerror = function() {
                     this.style.display = 'none';
                     const wrapper = this.parentElement;
@@ -3257,16 +3616,10 @@
             const mindMapImage = document.getElementById('mindMapImage');
             const closeMindMapBtn = document.getElementById('closeMindMap');
 
-            // ──── 📁 SET YOUR MIND MAP IMAGE PATH BELOW ────
-            // Place your image in the main folder and update the src below.
-            // Default: "mindmap.png" — change to your actual file name.
-            const MIND_MAP_IMAGE_PATH = 'mindmap.png'; // <-- CHANGE THIS to your image filename
-
-            // Set the image source
+            const MIND_MAP_IMAGE_PATH = 'mindmap.png';
             mindMapImage.src = MIND_MAP_IMAGE_PATH;
             mindMapImage.alt = 'Mind Map';
 
-            // Handle image load error — show a friendly fallback
             mindMapImage.onerror = function() {
                 this.style.display = 'none';
                 const wrapper = document.getElementById('mindMapImageWrapper');
@@ -3282,7 +3635,6 @@
                 if (old) old.remove();
                 wrapper.appendChild(fallback);
             };
-            // Reset on successful load
             mindMapImage.onload = function() {
                 this.style.display = 'block';
                 const wrapper = document.getElementById('mindMapImageWrapper');
@@ -3302,33 +3654,28 @@
                 document.body.style.overflow = '';
             }
 
-            // Open from nav link
             document.getElementById('mindMapNav').addEventListener('click', (e) => {
                 e.preventDefault();
                 openMindMapModal();
-                // Close mobile menu if open
                 hamburger?.classList.remove('active');
                 navLinks?.classList.remove('open');
             });
 
-            // Open from footer link
             document.getElementById('mindMapFooter').addEventListener('click', (e) => {
                 e.preventDefault();
                 openMindMapModal();
             });
 
-            // Close handlers
             closeMindMapBtn.addEventListener('click', closeMindMapModal);
             mindMapOverlay.addEventListener('click', (e) => {
                 if (e.target === mindMapOverlay) closeMindMapModal();
             });
 
-            // Close on Escape (already handled globally above)
-
             // ---------- INIT ----------
             setTimeout(updateActiveLink, 400);
 
             console.log('🚀 Shruti Maurya BPT Portfolio loaded with 3D, sounds, local certificate images & Mind Map!');
+            console.log('🔒 Image protection active: canvas rendering + anti-screenshot measures.');
             console.log('📁 Create a "certificates" folder and place your certificate images there.');
             console.log('📄 Update the paths in the certData object (cpr.image and conference.image).');
             console.log('📄 Place your CV as "Shruti_Maurya_CV.pdf" in the root folder.');
